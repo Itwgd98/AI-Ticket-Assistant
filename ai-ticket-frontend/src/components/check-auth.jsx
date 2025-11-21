@@ -1,32 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function CheckAuth({ children, protectedRoute }) {
+export default function CheckAuth({ children, protected: isProtected }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    if (protectedRoute) {
+    if (isProtected) {
+      // Protected route → must have token
       if (!token) {
         navigate("/login");
       } else {
         setLoading(false);
       }
     } else {
+      // Public route → must NOT have token
       if (token) {
         navigate("/");
       } else {
         setLoading(false);
       }
     }
-  }, [navigate, protectedRoute]);
+  }, [navigate, isProtected]);
 
-  if (loading) {
-    return <div>loading...</div>;
-  }
+  if (loading) return <div>Loading...</div>;
   return children;
 }
 
-export default CheckAuth;
