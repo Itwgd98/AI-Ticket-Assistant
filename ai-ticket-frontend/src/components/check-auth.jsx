@@ -9,14 +9,14 @@ export default function CheckAuth({ children, protected: isProtected }) {
     const token = localStorage.getItem("token");
 
     if (isProtected) {
-      // Protected route → must have token
+      // Protected route → requires token
       if (!token) {
         navigate("/login");
       } else {
         setLoading(false);
       }
     } else {
-      // Public route → must NOT have token
+      // Public route → redirect if already logged in
       if (token) {
         navigate("/");
       } else {
@@ -28,4 +28,3 @@ export default function CheckAuth({ children, protected: isProtected }) {
   if (loading) return <div>Loading...</div>;
   return children;
 }
-
