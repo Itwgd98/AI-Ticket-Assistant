@@ -10,23 +10,34 @@ export const signup = async (req, res) => {
   try {
     const hashed = await bcrypt.hash(password, 10);
 
-    const user = await User.create({ email, password: hashed, skills });
-
-    await inngest.send({
-      name: "user/signup",
-      data: { email },
+    const user = await User.create({ 
+      email, 
+      password: hashed, 
+      skills,
+      role: "user"          // REQUIRED
     });
+
+    // disable inngest temporarily
+   await inngest.send({
+     name: "user/signup",
+      data: { email },
+     });
 
     const token = jwt.sign(
       { _id: user._id, role: user.role },
       process.env.JWT_SECRET
     );
 
-    res.json({ user, token });
+    return res.json({ user, token });
   } catch (error) {
-    res.status(500).json({ error: "Signup failed", details: error.message });
+    console.error(error);  // ADD THIS so you can see error in terminal
+    return res.status(500).json({ 
+      error: "Signup failed", 
+      details: error.message 
+    });
   }
 };
+
 
 // LOGIN
 export const login = async (req, res) => {
